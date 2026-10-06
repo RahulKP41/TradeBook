@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 import { env } from "@/config/env";
 import healthRouter from "@/routes/health";
 import authRouter from "@/routes/auth";
+import accountsRouter from "@/routes/accounts";
+import { authMiddleware } from "@/middleware/auth";
 import { errorHandler } from "@/middleware/errorHandler";
 
 export function createApp() {
@@ -27,8 +29,9 @@ export function createApp() {
     res.json({ success: true, data: { name: "TradeBook API", version: "0.1.0" } });
   });
 
-  app.use(healthRouter);
+  app.use("/health", healthRouter);
   app.use("/api/auth", authRouter);
+  app.use("/api/accounts", authMiddleware, accountsRouter);
 
   app.use(errorHandler);
 

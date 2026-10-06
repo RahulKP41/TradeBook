@@ -31,6 +31,6 @@ COPY --from=builder /app/apps/api/prisma ./prisma
 
 USER nextjs
 
-EXPOSE 3001
+EXPOSE 3002
 
 CMD ["node", "-r", "tsconfig-paths/register", "dist/index.js"]

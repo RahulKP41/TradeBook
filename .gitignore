@@ -1,0 +1,40 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# build
+.next/
+out/
+dist/
+build/
+
+# env
+.env
+.env*.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Docker
+volumes/
+
+# tests
+coverage/
+
+# misc
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

@@ -41,7 +41,6 @@ export async function findTradesByUserId(filters: TradeFilters) {
 export async function findTradeByIdAndUserId(id: string, userId: string) {
   return prisma.trade.findFirst({
     where: { id, userId },
-    include: { account: true },
   });
 }
 

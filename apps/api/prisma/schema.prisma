@@ -1,0 +1,159 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  accounts TradingAccount[]
+  trades   Trade[]
+  strategies Strategy[]
+  journals Journal[]
+  behaviourEvents BehaviourEvent[]
+  aiInsights AIInsight[]
+
+  @@index([email])
+}
+
+model TradingAccount {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  currency    String   @default("USD")
+  initialBalance Decimal @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trades      Trade[]
+
+  @@index([userId])
+}
+
+model Trade {
+  id           String   @id @default(cuid())
+  userId       String
+  accountId    String
+  symbol       String
+  assetType    String
+  side         String
+  quantity     Decimal
+  entryPrice   Decimal
+  exitPrice    Decimal?
+  entryTime    DateTime
+  exitTime     DateTime?
+  stopLoss     Decimal?
+  takeProfit   Decimal?
+  grossPnl     Decimal?
+  fees         Decimal @default(0)
+  netPnl       Decimal?
+  riskAmount   Decimal?
+  rMultiple    Decimal?
+  status       String   @default("OPEN")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account      TradingAccount @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  journal      Journal?
+  strategies   TradeStrategy[]
+  behaviourEvents BehaviourEvent[]
+  aiInsights   AIInsight[]
+
+  @@index([userId])
+  @@index([accountId])
+  @@index([symbol])
+  @@index([entryTime])
+}
+
+model Journal {
+  id            String   @id @default(cuid())
+  tradeId       String   @unique
+  userId        String
+  entryReason   String?
+  exitReason    String?
+  emotionBefore String?
+  emotionDuring String?
+  emotionAfter  String?
+  confidence    Float?
+  marketObs     String?
+  ruleFollowed  String?
+  mistakes      String?
+  lessons       String?
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  trade         Trade    @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tradeId])
+  @@index([userId])
+}
+
+model Strategy {
+  id          String   @id @default(cuid())
+  userId      String
+  name        String
+  description String?
+  rules      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trades      TradeStrategy[]
+
+  @@index([userId])
+  @@unique([userId, name])
+}
+
+model TradeStrategy {
+  tradeId    String
+  strategyId String
+  createdAt  DateTime @default(now())
+  trade      Trade    @relation(fields: [tradeId], references: [id], onDelete: Cascade)
+  strategy   Strategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  @@id([tradeId, strategyId])
+}
+
+model BehaviourEvent {
+  id            String   @id @default(cuid())
+  userId        String
+  tradeId       String?
+  type          String
+  confidence    Float
+  evidence      String
+  createdAt     DateTime @default(now())
+  user          User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trade         Trade? @relation(fields: [tradeId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([type])
+  @@index([tradeId])
+}
+
+model AIInsight {
+  id        String   @id @default(cuid())
+  userId    String
+  tradeId   String?
+  type      String
+  summary   String
+  patterns  String
+  strengths String
+  weaknesses String
+  recommendations String
+  confidence Float?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trade     Trade? @relation(fields: [tradeId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([type])
+}

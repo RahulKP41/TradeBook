@@ -7,6 +7,7 @@ import { env } from "@/config/env";
 import healthRouter from "@/routes/health";
 import authRouter from "@/routes/auth";
 import accountsRouter from "@/routes/accounts";
+import tradesRouter from "@/routes/trades";
 import { authMiddleware } from "@/middleware/auth";
 import { errorHandler } from "@/middleware/errorHandler";
 
@@ -32,6 +33,7 @@ export function createApp() {
   app.use("/health", healthRouter);
   app.use("/api/auth", authRouter);
   app.use("/api/accounts", authMiddleware, accountsRouter);
+app.use("/api/trades", authMiddleware, tradesRouter);
 
   app.use(errorHandler);
 

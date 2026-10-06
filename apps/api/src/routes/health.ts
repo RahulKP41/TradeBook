@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 
 const router = Router();
 
-router.get("/health", (_req, res) => {
+router.get("/", (_req, res) => {
   res.json({
     success: true,
     data: {
